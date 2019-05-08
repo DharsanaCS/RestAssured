@@ -8,54 +8,60 @@ import org.json.simple.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ValidateRegisterUserTest {
+
+    private final String registrationEndPoint = "https://reqres.in/api/register";
 
     @Test
     public void validateRegisterUserTest() {
 
+        Map<String, String> jsonInputMap = new HashMap<String, String>() {{
+            put("email", "sydney@fife");
+            put("password", "pistol");
+        }};
 
-        JSONObject requestJson = new JSONObject();
+        JSONObject requestJson = getJsonRequestBody(jsonInputMap);
 
-        try {
-            requestJson.put("email", "sydney@fife");
-            requestJson.put("password", "pistol");
-        } catch (JsonException e) {
-            e.printStackTrace();
-        }
+        Response responseRegisterUser = getResponse(requestJson, registrationEndPoint);
 
-        Response responseRegisterUser = getResponse(requestJson, "https://reqres.in/api/register");
-
-
-        System.out.println(responseRegisterUser.getBody().prettyPrint());
-
-        System.out.println(responseRegisterUser.getStatusCode());
         Assert.assertEquals(responseRegisterUser.getStatusCode(), 201);
 
-// create method for repititive actions and combine both test cases into a single class
+
     }
 
     @Test
     public void validateRegisterUserFailureTest() {
 
 
+        Map<String, String> jsonInputMap = new HashMap<String, String>() {{
+            put("email", "sydney@fife");
+        }};
+
+        JSONObject requestJson = getJsonRequestBody(jsonInputMap);
+
+        Response responseRegisterUser = getResponse(requestJson, registrationEndPoint);
+
+        Assert.assertEquals(responseRegisterUser.getStatusCode(), 400);
+
+    }
+
+    private JSONObject getJsonRequestBody(Map<String, String> values) {
+
         JSONObject requestJson = new JSONObject();
 
         try {
-            requestJson.put("email", "sydney@fife");
+
+            for (Map.Entry<String, String> keyValuePair : values.entrySet())
+                requestJson.put(keyValuePair.getKey(), keyValuePair.getValue());
 
         } catch (JsonException e) {
             e.printStackTrace();
-        }
+          }
 
-        Response responseRegisterUser = getResponse(requestJson, "https://reqres.in/api/register");
-
-
-        System.out.println(responseRegisterUser.getBody().prettyPrint());
-
-        System.out.println(responseRegisterUser.getStatusCode());
-        Assert.assertEquals(responseRegisterUser.getStatusCode(), 400);
-
-// create method for repititive actions and combine both test cases into a single class
+        return requestJson;
     }
 
     public Response getResponse(JSONObject requestJson, String endPoint) {

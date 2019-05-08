@@ -15,12 +15,10 @@ public class ValidateResponseCodeTest {
     public void validateResponseCode(){
         Response response = RestAssured.get("https://reqres.in/api/users?page=2");
         Assert.assertEquals(response.getStatusCode(),200);
-        System.out.println(response.getBody().prettyPrint());
         validateData(response);
     }
 
-    private void validateData(Response response){
-        List<Map<String, ?>> actualData = response.jsonPath().getList("data");
+    private List<Map<String, ?>> getExpectedData(){
         List<Map<String, ?>> expectedData = new ArrayList<>( );
         Map<String, Object> map1 = new HashMap<>();
         Map<String, Object> map2 = new HashMap<>();
@@ -36,15 +34,16 @@ public class ValidateResponseCodeTest {
         map2.put("last_name","Morris");
 
         expectedData.add(map2);
+        return expectedData;
+    }
 
-        System.out.println("Size is"+actualData.size());
+    private void validateData(Response response){
 
-        //Create a method to return expected data
-
+        List<Map<String, ?>> actualData = response.jsonPath().getList("data");
+        List<Map<String, ?>> expectedData =getExpectedData();
 
         for(int i =0; i < 2; i++){
-            System.out.println("Id : "+ actualData.get(i).get("id").toString());
-           // Assert.assertEquals(actualData.get(i).size(),expectedData.get(i).size(),"Size mismatch");
+
             Assert.assertEquals(actualData.get(i).get("id").toString(), expectedData.get(i).get("id").toString(),"fail assert id");
             Assert.assertEquals(actualData.get(i).get("first_name").toString(), expectedData.get(i).get("first_name").toString(),"fail assert first name");
             Assert.assertEquals(actualData.get(i).get("last_name").toString(), expectedData.get(i).get("last_name").toString(),"fail assert last name");

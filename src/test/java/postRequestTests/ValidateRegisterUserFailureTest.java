@@ -30,8 +30,6 @@ public class ValidateRegisterUserFailureTest {
 
         request.body(requestJson.toString());
         Response responseRegister = request.post("https://reqres.in/api/register");
-        System.out.println(responseRegister.getBody().prettyPrint());
-        System.out.println(responseRegister.getStatusCode());
         Assert.assertEquals(responseRegister.getStatusCode(),400);
 
 
